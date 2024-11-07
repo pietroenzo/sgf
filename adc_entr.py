@@ -16,7 +16,7 @@ def centralizar_janela(janela, largura, altura):
 def interface():
 
     janela = Tk()
-    janela.title("Adicionar despesa")
+    janela.title("Adicionar entrada")
     janela.geometry("300x250")
 
     validacao_numeros = janela.register(valida_entrada)
@@ -26,7 +26,7 @@ def interface():
 
     frame.grid_columnconfigure(0, weight=0)
 
-    texto = Label(frame, text="Adicionar despesa")
+    texto = Label(frame, text="Adicionar entrada")
     texto.grid(column=0, row=1, sticky="ew")
 
     linha_branco = Label(frame, text="")
@@ -53,7 +53,7 @@ def interface():
     linha_branco = Label(frame, text="")
     linha_branco.grid(column=0, row=9)
 
-    botao = Button(frame, text="Adicionar", command=lambda: (__import__('sgf').adiciona_despesa(in_descr.get(1.0, "end-1c"), in_categ.get(1.0, "end-1c"), in_valor.get()), janela.destroy(), __import__('sgf').upd_saldo(__import__('sgf').interface().texto3)), width=20)
+    botao = Button(frame, text="Adicionar", command=lambda: (__import__('sgf').adiciona_entrada(in_descr.get(1.0, "end-1c"), in_categ.get(1.0, "end-1c"), in_valor.get()), janela.destroy(), __import__('sgf').upd_saldo(__import__('sgf').interface().texto3)), width=20)
     botao.grid(column=0, row=10, padx=10, pady=10, sticky="ew")
 
     centralizar_janela(janela, 300, 250)

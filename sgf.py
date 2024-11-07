@@ -6,6 +6,47 @@ from datetime import datetime
 db_path = "C:\\Users\\cs406463\\Downloads\\sgf.db"
 banco_existe = os.path.exists(db_path)
 
+def interface():
+
+    global texto3
+    
+    janela = Tk()
+    janela.title("SGF")
+    janela.geometry("800x600")
+
+    janela.grid_columnconfigure(0, weight=1)
+
+    texto = Label(janela, text="SGF - Sistema de Gestão Financeira")
+    texto.grid(column=0, row=1, sticky="ew")
+
+    texto2 = Label(janela, text="Bem vindo, USER")
+    texto2.grid(column=0, row=2, sticky="w")
+
+    linha_branco = Label(janela, text="")
+    linha_branco.grid(column=0, row=3)
+
+    texto3 = Label(janela, text="Seu saldo é: " + str(ler_saldo()[0][0]))
+    texto3.grid(column=0, row=4, sticky="w")
+
+    texto4 = Label(janela, text="Você tem X ações para hoje.")
+    texto4.grid(column=0, row=5, sticky="w")
+
+    linha_branco = Label(janela, text="")
+    linha_branco.grid(column=0, row=6)
+
+    botao = Button(janela, text="Adcionar despesa", command=lambda: __import__('adc_desp').interface(), width=20)
+    botao.grid(column=0, row=7, padx=0, pady=0, sticky="w")
+
+    botao2 = Button(janela, text="Adcionar entradas", command=lambda: __import__('adc_entr').interface(), width=20)
+    botao2.grid(column=0, row=8, padx=0, pady=0, sticky="w")
+
+    botao2 = Button(janela, text="Tabela", command=lambda: __import__('tabela').interface(), width=20)
+    botao2.grid(column=0, row=9, padx=0, pady=0, sticky="w")
+
+    centralizar_janela(janela, 800, 600)
+
+    janela.mainloop()
+
 def checa_banco():
 
     conn = sqlite3.connect(db_path)
@@ -59,47 +100,47 @@ def adiciona_banco(data, descricao, sentido, categoria, valor):
 def adiciona_despesa(descricao, categoria, valor):
     data_atual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    adiciona_banco(data_atual, descricao, "despesa", categoria, valor)
+    adiciona_banco(data_atual, descricao, "Despesa", categoria, valor)
 
 def adiciona_entrada(descricao, categoria, valor):
     data_atual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
-    adiciona_banco(data_atual, descricao, "despesa", categoria, valor)
+    adiciona_banco(data_atual, descricao, "Entrada", categoria, valor)
 
-def interface():
+def ler_banco():
 
-    janela = Tk()
-    janela.title("SGF")
-    janela.geometry("800x600")
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
 
-    janela.grid_columnconfigure(0, weight=1)
+    cursor.execute("SELECT data, descricao, sentido, categoria, valor FROM despesas")
+    dados = cursor.fetchall()
 
-    texto = Label(janela, text="SGF - Sistema de Gestão Financeira")
-    texto.grid(column=0, row=1, sticky="ew")
+    return dados
 
-    texto2 = Label(janela, text="Bem vindo, USER")
-    texto2.grid(column=0, row=2, sticky="w")
+def ler_saldo():
 
-    linha_branco = Label(janela, text="")
-    linha_branco.grid(column=0, row=3)
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
 
-    texto3 = Label(janela, text="Seu saldo é: SALDO")
-    texto3.grid(column=0, row=4, sticky="w")
+    cursor.execute("SELECT SUM(CASE WHEN sentido = 'Entrada' THEN valor ELSE 0 END) - SUM(CASE WHEN sentido = 'Despesa' THEN valor ELSE 0 END) AS saldo FROM despesas")
+    saldo = cursor.fetchall()
 
-    texto4 = Label(janela, text="Você tem X ações para hoje.")
-    texto4.grid(column=0, row=5, sticky="w")
+    return saldo
 
-    linha_branco = Label(janela, text="")
-    linha_branco.grid(column=0, row=6)
+def upd_saldo(texto3):
 
-    botao = Button(janela, text="Adcionar despesa", command=lambda: __import__('adc_desp').interface(), width=20)
-    botao.grid(column=0, row=7, padx=0, pady=0, sticky="w")
+    texto3.config(text="Seu saldo é: " + str(ler_saldo()[0][0]))
+    
 
-    botao2 = Button(janela, text="Adcionar entradas", command=lambda: print("aweawe"), width=20)
-    botao2.grid(column=0, row=8, padx=0, pady=0, sticky="w")
-
-
-    janela.mainloop()
+def centralizar_janela(janela, largura, altura):
+    
+    largura_tela = janela.winfo_screenwidth()
+    altura_tela = janela.winfo_screenheight()
+    
+    x = (largura_tela // 2) - (largura // 2)
+    y = (altura_tela // 2) - (altura // 2)
+    
+    janela.geometry(f"{largura}x{altura}+{x}+{y}")
 
 if __name__ == "__main__":
     
